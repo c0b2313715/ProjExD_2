@@ -140,7 +140,7 @@ def main():
         # for key,tyo in KK.items():
         #     if sum_mv[key]:
         #         kk_rct=kk[tyo]
-        # screen.blit(kk_img, kk_rct)
+        screen.blit(kk_img, kk_rct)
         bb_rct.move_ip((vx,vy))
         yoko,tate = check_bound(bb_rct)
         if not yoko:
