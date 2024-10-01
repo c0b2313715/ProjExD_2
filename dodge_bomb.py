@@ -2,6 +2,7 @@ import os
 import sys
 import random
 import pygame as pg
+import time
 
 
 WIDTH, HEIGHT = 1100, 650
@@ -10,6 +11,23 @@ DELTA = {pg.K_UP:(0,-5),
          pg.K_LEFT:(-5,0),
          pg.K_RIGHT:(+5,0),}
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+
+def game_over(screen):
+    si_img=pg.image.load("fig/8.png")  # 泣いているこかとん
+    si_rct=si_img.get_rect()
+    go_img=pg.Surface((WIDTH,HEIGHT))  # ブラックスクリーン
+    pg.draw.rect(go_img,(0,0,0),pg.Rect(0,0,WIDTH,HEIGHT))
+    go_img.set_alpha(10)
+    fonto =pg.font.Font(None,80)
+    txt = fonto.render("Game Over",True,(255,255,255))
+    screen.blit(go_img,[0,0])
+    screen.blit(txt,(WIDTH/2-40,HEIGHT/2-100))
+    screen.blit(si_rct,(200,400))
+    screen.blit(si_rct,(200,600))
+    pg.display.update()
+       
+    
 
 
 def check_bound(obj_rct:pg.Rect) -> tuple[bool,bool]:
@@ -41,6 +59,12 @@ def main():
     bb_rct.centerx = random.randint(0,WIDTH)
     bb_rct.centery = random.randint(0,HEIGHT)
     vx,vy= +5,+5
+    si_img=pg.image.load("fig/8.png")  # 泣いているこかとん
+    go_img=pg.Surface((WIDTH,HEIGHT))  # ブラックスクリーン
+    pg.draw.rect(go_img,(0,0,0),pg.Rect(0,0,WIDTH,HEIGHT))
+    go_img.set_alpha(100)
+    fonto =pg.font.Font(None,80)
+    txt = fonto.render("Game Over",True,(255,255,255))
     clock = pg.time.Clock()
     tmr = 0
 
@@ -50,8 +74,14 @@ def main():
                 return
         screen.blit(bg_img, [0, 0])
         if kk_rct.colliderect(bb_rct):  # こうかとんと爆弾が重なっていたら。（逆でもおなじみになる）
-            print("GameOver")
+            screen.blit(go_img,[0,0])
+            screen.blit(txt,(WIDTH/2-100,HEIGHT/2-50))
+            screen.blit(si_img,[WIDTH//2-150,HEIGHT//2-50])
+            screen.blit(si_img,[WIDTH//2+220,HEIGHT//2-50])
+            pg.display.update()
+            time.sleep(5)
             return 
+        
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
