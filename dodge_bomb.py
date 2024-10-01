@@ -10,10 +10,21 @@ DELTA = {pg.K_UP:(0,-5),
          pg.K_DOWN:(0,+5),
          pg.K_LEFT:(-5,0),
          pg.K_RIGHT:(+5,0),}
+KK ={(0,-5):0,
+     (+5,-5):1,
+     (+5,0):2,
+    (+5,+5):3,
+    (0,+5):4,
+    (-5,+5):5,
+    (-5,0):6,
+    (-5,-5):7,
+    }
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def game_over(screen):
+    screen = pg.display.set_mode((WIDTH, HEIGHT))
+    bg_img = pg.image.load("fig/pg_bg.jpg")
     si_img=pg.image.load("fig/8.png")  # 泣いているこかとん
     si_rct=si_img.get_rect()
     go_img=pg.Surface((WIDTH,HEIGHT))  # ブラックスクリーン
@@ -22,12 +33,21 @@ def game_over(screen):
     fonto =pg.font.Font(None,80)
     txt = fonto.render("Game Over",True,(255,255,255))
     screen.blit(go_img,[0,0])
-    screen.blit(txt,(WIDTH/2-40,HEIGHT/2-100))
-    screen.blit(si_rct,(200,400))
-    screen.blit(si_rct,(200,600))
+    screen.blit(txt,(WIDTH/2-150,HEIGHT/2-50))
+    screen.blit(si_img,[WIDTH//2-200,HEIGHT//2-50])
+    screen.blit(si_img,[WIDTH//2+170,HEIGHT//2-50])
+    pg.display.update()
     pg.display.update()
        
-    
+def kk_imges(m):
+    list=[i for i in range(0,360,45)]
+    mk=()
+    for j in range(len(list)):
+        kk_img = pg.transform.rotozoom(pg.image.load(m), list[j], 0.9)
+        kk_rct = kk_img.get_rect()
+        mk+=(kk_img,kk_rct)
+    return mk
+
 
 
 def check_bound(obj_rct:pg.Rect) -> tuple[bool,bool]:
@@ -43,6 +63,20 @@ def check_bound(obj_rct:pg.Rect) -> tuple[bool,bool]:
         tate = False
     return yoko,tate
 
+def bb_accs(n)-> int:
+    accs = [a for a in range(1, 11)]
+    a=accs[n[1]]
+    b=a+int(n[2])
+    return b
+
+# def bb_imgs(n):
+#     for r in range(1, 11):
+#         bb_img = pg.Surface((20*r, 20*r))
+#         pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+#       #  if r is None n[1]:
+#         return bb_img
+
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -51,6 +85,7 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
+    kk=kk_imges("fig/3.png")  # こうかとん画像
     bb_img = pg.Surface((20,20))
     bb_img .set_colorkey((0,0,0))
     pg.draw.circle(bb_img,(255,0,0),(10,10),10)
@@ -75,9 +110,9 @@ def main():
         screen.blit(bg_img, [0, 0])
         if kk_rct.colliderect(bb_rct):  # こうかとんと爆弾が重なっていたら。（逆でもおなじみになる）
             screen.blit(go_img,[0,0])
-            screen.blit(txt,(WIDTH/2-100,HEIGHT/2-50))
-            screen.blit(si_img,[WIDTH//2-150,HEIGHT//2-50])
-            screen.blit(si_img,[WIDTH//2+220,HEIGHT//2-50])
+            screen.blit(txt,(WIDTH/2-150,HEIGHT/2-50))
+            screen.blit(si_img,[WIDTH//2-200,HEIGHT//2-50])
+            screen.blit(si_img,[WIDTH//2+170,HEIGHT//2-50])
             pg.display.update()
             time.sleep(5)
             return 
@@ -93,6 +128,9 @@ def main():
         #     sum_mv[0] -= 5
         # if key_lst[pg.K_RIGHT]:
         #     sum_mv[0] += 5
+        # for r in range(1, 11):
+        #     bb_img = pg.Surface((20*r, 20*r))
+        #     pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
         for key,tup in DELTA.items():
             if key_lst[key]:
                 sum_mv[0] += tup[0]  # 横方向
@@ -100,6 +138,9 @@ def main():
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
+        for key,tyo in KK.items():
+            if sum_mv[key]:
+                kk_rct=kk[tyo]
         screen.blit(kk_img, kk_rct)
         bb_rct.move_ip((vx,vy))
         yoko,tate = check_bound(bb_rct)
@@ -109,6 +150,9 @@ def main():
             vy *=-1
         screen.blit(bb_img,bb_rct)
         pg.display.update()
+        # avx = vx*bb_accs[min(tmr//500, 9)]
+        # vx,vy=avx,avx
+        # bb_img = bb_imgs[min(tmr//500, 9)]
         tmr += 1
         clock.tick(50)
 
