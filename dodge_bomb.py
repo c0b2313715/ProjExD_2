@@ -138,10 +138,10 @@ def main():
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
-        for key,tyo in KK.items():
-            if sum_mv[key]:
-                kk_rct=kk[tyo]
-        screen.blit(kk_img, kk_rct)
+        # for key,tyo in KK.items():
+        #     if sum_mv[key]:
+        #         kk_rct=kk[tyo]
+        # screen.blit(kk_img, kk_rct)
         bb_rct.move_ip((vx,vy))
         yoko,tate = check_bound(bb_rct)
         if not yoko:
